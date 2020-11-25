@@ -7,6 +7,7 @@ namespace Slan
     {
         private readonly string source;
         private readonly List<Token> tokens = new List<Token>();
+
         private int start = 0;
         private int current = 0;
         private int line = 1;
@@ -44,9 +45,9 @@ namespace Slan
                 case ';': addToken(TokenType.SEMICOLON); break;
                 case '*': addToken(TokenType.STAR); break;
                 case '!': addToken(match('=') ? TokenType.BANG_EQUAL : TokenType.BANG); break;
-                case '=': addToken(match('=') ? TokenType.EQUAL_EQUAL : TokenType.EQUAL);break;
+                case '=': addToken(match('=') ? TokenType.EQUAL_EQUAL : TokenType.EQUAL); break;
                 case '<': addToken(match('=') ? TokenType.LESS_EQUAL : TokenType.LESS); break;
-                case '>': addToken(match('=') ? TokenType.GREATER_EQUAL : TokenType.GREATER);break;
+                case '>': addToken(match('=') ? TokenType.GREATER_EQUAL : TokenType.GREATER); break;
 
                 case '/':
                     if (match('/'))
@@ -69,19 +70,70 @@ namespace Slan
 
                 case '"': itsString(); break;
 
+                case 'o': if (peek() == 'r') addToken(TokenType.OR); break;
+
+
                 default:
                     if (isDigit(c))
                     {
                         number();
                     }
+                    else if (isAlpha(c))
+                    {
+                        identifier();
+                    }
                     else
                     {
-                        Slan.error(line, "Unexpected character."); 
+                        Slan.error(line, "Unexpected character.");
                     }
                     break;
 
             }
         }
+
+
+        private static Dictionary<string, TokenType> KeyWords()
+        {
+            return new Dictionary<string, TokenType>
+            {
+                { "and", TokenType.AND },
+                {"class" , TokenType.CLASS },
+                {"else" , TokenType.ELSE },
+                {"false"  ,TokenType.FALSE},
+                {"for" , TokenType.FOR },
+                {"fun" , TokenType.FUN },
+                {"if" , TokenType.IF },
+                {"null" , TokenType.NULL },
+                {"or" , TokenType.OR },
+                {"print" , TokenType.PRINT },
+                {"return" , TokenType.RETURN },
+                {"super" , TokenType.SUPER },
+                {"this" , TokenType.THIS },
+                {"true" , TokenType.TRUE },
+                {"var" , TokenType.VAR },
+                {"while" , TokenType.WHILE }
+            };
+        }
+
+
+
+
+        private void identifier()
+        {
+            while (isAlphaNumeric(peek())) advance();
+
+            string text = source.Substring(start, current);
+            TokenType type = KeyWords()[text];
+          
+
+            addToken(TokenType.IDENTIFIER);
+        }
+
+        private bool isAlphaNumeric(char c) => isAlpha(c) || isDigit(c);
+
+
+        private bool isAlpha(char c) => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c == '_');
+
 
         private void number()
         {
@@ -110,7 +162,7 @@ namespace Slan
 
         private void itsString()
         {
-            while(peek() != '"' && !isAtEnd())
+            while (peek() != '"' && !isAtEnd())
             {
                 if (peek() == '\n') line++;
                 advance();
@@ -152,10 +204,8 @@ namespace Slan
             return source[current - 1];
         }
 
-        private void addToken(TokenType tokenType)
-        {
-            addToken(tokenType, null);
-        }
+        private void addToken(TokenType tokenType) => addToken(tokenType, null);
+
 
         private void addToken(TokenType tokenType, object literal)
         {
@@ -163,9 +213,7 @@ namespace Slan
             tokens.Add(new Token(tokenType, text, literal, line));
         }
 
-        private bool isAtEnd()
-        {
-            return current >= source.Length;
-        }
+        private bool isAtEnd() => current >= source.Length;
+
     }
 }

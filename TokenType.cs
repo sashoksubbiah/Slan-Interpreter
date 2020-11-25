@@ -20,7 +20,7 @@ namespace Slan
         IDENTIFIER , STRING , NUMBER,
 
 
-        AND, CLASS , ELSE , FALSE , FUN , IF , NULL, OR,
+        AND, CLASS , ELSE , FALSE , FUN ,FOR ,  IF , NULL, OR,
         PRINT , RETURN , SUPER , THIS , TRUE , VAR , WHILE,
 
         EOF
