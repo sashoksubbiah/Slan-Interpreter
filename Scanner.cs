@@ -122,7 +122,7 @@ namespace Slan
         {
             while (isAlphaNumeric(peek())) advance();
 
-            string text = source.Substring(start, current);
+            string text = source.Substring(start, current - start);
             TokenType type = KeyWords()[text];
           
 
@@ -145,7 +145,7 @@ namespace Slan
                 while (isDigit(peek())) advance();
             }
 
-            addToken(TokenType.NUMBER, Double.Parse(source.Substring(start, current)));
+            addToken(TokenType.NUMBER, Double.Parse(source.Substring(start, current - start)));
 
         }
 
@@ -176,7 +176,7 @@ namespace Slan
 
             advance();
 
-            String value = source.Substring(start + 1, current - 1);
+            String value = source.Substring(start + 1, (current - start) - 1);
             addToken(TokenType.STRING, value);
         }
 
@@ -209,7 +209,7 @@ namespace Slan
 
         private void addToken(TokenType tokenType, object literal)
         {
-            string text = source.Substring(start, current);
+            string text = source.Substring(start, current - start);
             tokens.Add(new Token(tokenType, text, literal, line));
         }
 
